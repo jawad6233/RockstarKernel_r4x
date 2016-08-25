@@ -88,6 +88,13 @@ config IOSCHED_ZEN
 	  Should work best with devices where there is no travel delay.
 
 
+config IOSCHED_TRIPNDROID
+ 	tristate "Tripndroid"
+ 	default y
+ 	---help---
+ 	  The Trip N Droid scheduler
+
+
 choice
 	prompt "Default I/O scheduler"
 	default DEFAULT_CFQ
@@ -110,6 +117,11 @@ choice
 		  as desired, independently of the disk parameters and with
 		  any workload. It also tries to guarantee low latency to
 		  interactive and soft real-time applications.
+
+
+	config DEFAULT_TRIPNDROID
+ 		bool "TRIPNDROID" if IOSCHED_TRIPNDROID=y
+
 
 	config DEFAULT_NOOP
 		bool "No-op"
@@ -152,6 +164,10 @@ config DEFAULT_IOSCHED
 	default "bfq" if DEFAULT_BFQ
 	default "noop" if DEFAULT_NOOP
 	default "zen" if DEFAULT_ZEN
+	default "maple" if DEFAULT_MAPLE
+	default "fiops" if DEFAULT_FIOPS
+	default "sio" if DEFAULT_SIO
+	default "tripndroid" if DEFAULT_TRIPNDROID
 
 endmenu
 
