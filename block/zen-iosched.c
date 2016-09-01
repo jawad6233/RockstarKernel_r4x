@@ -4,9 +4,6 @@
  *
  * Copyright (C) 2012 Brandon Berhent <bbedward@gmail.com>
  *           (C) 2014 LoungeKatt <twistedumbrella@gmail.com>
- *           (c) 2015 Fixes to stop crashing on 3.10 by Matthew Alex <matthewalex@outlook.com>
- *           (c) 2016 POrt and fixes for Linux 3.18 by engstk <eng.stk@sapo.pt>
- *
  * FCFS, dispatches are back-inserted, deadlines ensure fairness.
  * Should work best with devices where there is no travel delay.
  */
@@ -162,22 +159,25 @@ static int zen_dispatch_requests(struct request_queue *q, int force)
 static int zen_init_queue(struct request_queue *q, struct elevator_type *e)
 {
 	struct zen_data *zdata;
-	struct elevator_queue *eq;
-
-	eq = elevator_alloc(q, e);
-	if (!eq)
-		return -ENOMEM;
+    struct elevator_queue *eq;
+    
+    eq = elevator_alloc(q, e);
+    if (!eq)
+        return -ENOMEM;
 
 	zdata = kmalloc_node(sizeof(*zdata), GFP_KERNEL, q->node);
-	if (!zdata) {
-		kobject_put(&eq->kobj);
-		return -ENOMEM;
-	}
 
-	eq->elevator_data = zdata;
-	spin_lock_irq(q->queue_lock);
+    if (!zdata) {
+        kobject_put(&eq->kobj);
+        return -ENOMEM;
+    }
+    eq->elevator_data = zdata;
+	
+ 
+    spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
+	
 
 	INIT_LIST_HEAD(&zdata->fifo_list[SYNC]);
 	INIT_LIST_HEAD(&zdata->fifo_list[ASYNC]);
