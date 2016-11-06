@@ -27,6 +27,8 @@ obj-$(CONFIG_CPU_FREQ_GOV_ALESSA) 	+= cpufreq_alessa.o
 obj-$(CONFIG_CPU_FREQ_GOV_DANCEDANCE) 	+= cpufreq_dancedance.o
 obj-$(CONFIG_CPU_FREQ_GOV_IMPULSE) 	+= cpufreq_impulse.o
 obj-$(CONFIG_CPU_FREQ_GOV_INTELLIACTIVE)+= cpufreq_intelliactive.o
+obj-$(CONFIG_CPU_FREQ_GOV_IRONACTIVE)	+= 
+cpufreq_ironactive.o
 obj-$(CONFIG_CPU_BOOST)			+= cpu-boost.o
 
 
