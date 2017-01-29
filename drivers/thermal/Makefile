@@ -43,7 +43,8 @@ obj-$(CONFIG_THERMAL_TSENS8974)	+= msm-tsens.o
 
 CFLAGS_msm-tsens.o := $(call cc-disable-warning, enum-conversion)
 
-obj-$(CONFIG_INTELLI_THERMAL)	+= intelli/msm_thermal.o
+
+obj-$(CONFIG_INTELLI_THERMAL)	+= intelli/
 
 obj-$(CONFIG_THERMAL_QPNP)	+= qpnp-temp-alarm.o
 obj-$(CONFIG_THERMAL_QPNP_ADC_TM)	+= qpnp-adc-tm.o
