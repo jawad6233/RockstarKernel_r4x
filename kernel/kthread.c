@@ -342,8 +342,8 @@ static void __kthread_bind_mask(struct task_struct *p, const struct cpumask *mas
 	}
 
 	/* It's safe because the task is inactive. */
-	raw_spin_lock_irqsave(&p->pi_lock, flags);
-	do_set_cpus_allowed(p, mask);
+	p->kthread_per_cpu = true;
+	do_set_cpus_allowed(p, cpumask_of(cpu));
 	p->flags |= PF_NO_SETAFFINITY;
 	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
 }
