@@ -105,13 +105,15 @@ enum {
 #define MICBIAS_MIN_VAL 1600000
 #define MICBIAS_STEP_SIZE 50000
 
-#define DEFAULT_BOOST_VOLTAGE 5000
-#define MIN_BOOST_VOLTAGE 4000
-#define MAX_BOOST_VOLTAGE 5550
+
+#define DEFAULT_BOOST_VOLTAGE 8000
+#define MIN_BOOST_VOLTAGE 4400
+#define MAX_BOOST_VOLTAGE 8000
 #define BOOST_VOLTAGE_STEP 50
 
-#define MSM8X16_WCD_MBHC_BTN_COARSE_ADJ  100 /* in mV */
-#define MSM8X16_WCD_MBHC_BTN_FINE_ADJ 12 /* in mV */
+#define MSM8X16_WCD_MBHC_BTN_COARSE_ADJ  130 /* in mV */
+#define MSM8X16_WCD_MBHC_BTN_FINE_ADJ 15 /* in mV */
+
 
 #define VOLTAGE_CONVERTER(value, min_value, step_size)\
 	((value - min_value)/step_size)
@@ -1466,10 +1468,10 @@ static void msm8x16_wcd_boost_off(struct snd_soc_codec *codec)
 {
 	snd_soc_update_bits(codec,
 		MSM8X16_WCD_A_ANALOG_BOOST_EN_CTL,
-		0xDF, 0x5F);
+		0xDF, 0x80);
 	snd_soc_update_bits(codec,
 		MSM8X16_WCD_A_DIGITAL_CDC_DIG_CLK_CTL,
-		0x20, 0x00);
+		0x20, 0x20);
 }
 
 static void msm8x16_wcd_bypass_on(struct snd_soc_codec *codec)
@@ -5748,7 +5750,7 @@ static void msm8x16_wcd_set_boost_v(struct snd_soc_codec *codec)
 				snd_soc_codec_get_drvdata(codec);
 
 	snd_soc_update_bits(codec, MSM8X16_WCD_A_ANALOG_OUTPUT_VOLTAGE,
-			0x1F, msm8x16_wcd_priv->boost_voltage);
+			0x3C, msm8x16_wcd_priv->boost_voltage);
 }
 
 static void msm8x16_wcd_configure_cap(struct snd_soc_codec *codec,
@@ -5784,6 +5786,116 @@ static void msm8x16_wcd_configure_cap(struct snd_soc_codec *codec,
 				0x40, 0x00);
 	}
 }
+
+
+#ifdef CONFIG_SOUND_CONTROL
+
+static struct snd_soc_codec *sound_control_codec_ptr;
+
+static ssize_t headphone_gain_store(struct kobject *kobj,
+		struct kobj_attribute *attr, const char *buf, size_t count)
+{
+
+
+	int input_l = 3, input_r = 3;
+
+
+	sscanf(buf, "%d %d", &input_l, &input_r);
+
+	if (input_l < -84 || input_l > 25)
+		input_l = 3;
+
+	if (input_r < -84 || input_r > 25)
+		input_r = 3;
+
+	snd_soc_write(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_RX1_VOL_CTL_B2_CTL, input_l);
+	snd_soc_write(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_RX2_VOL_CTL_B2_CTL, input_r);
+
+	return count;
+}
+
+static ssize_t headphone_gain_show(struct kobject *kobj,
+		struct kobj_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d %d\n",
+		snd_soc_read(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_RX1_VOL_CTL_B2_CTL),
+		snd_soc_read(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_RX2_VOL_CTL_B2_CTL)
+	);
+}
+
+static struct kobj_attribute headphone_gain_attribute =
+	__ATTR(headphone_gain, 0664,
+		headphone_gain_show,
+		headphone_gain_store);
+
+static ssize_t mic_gain_show(struct kobject *kobj,
+		struct kobj_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+		snd_soc_read(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_TX1_VOL_CTL_GAIN));
+}
+
+static ssize_t mic_gain_store(struct kobject *kobj,
+		struct kobj_attribute *attr, const char *buf, size_t count)
+{
+	int input;
+
+	sscanf(buf, "%d", &input);
+
+	if (input < -10 || input > 20)
+		input = 0;
+
+	snd_soc_write(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_TX1_VOL_CTL_GAIN, input);
+
+	return count;
+}
+
+static struct kobj_attribute mic_gain_attribute =
+	__ATTR(mic_gain, 0664,
+		mic_gain_show,
+		mic_gain_store);
+
+static ssize_t speaker_gain_show(struct kobject *kobj,
+		struct kobj_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+		snd_soc_read(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_RX3_VOL_CTL_B2_CTL));
+}
+
+static ssize_t speaker_gain_store(struct kobject *kobj,
+		struct kobj_attribute *attr, const char *buf, size_t count)
+{
+	int input;
+
+	sscanf(buf, "%d", &input);
+
+	if (input < -10 || input > 20)
+		input = 0;
+
+	snd_soc_write(sound_control_codec_ptr, MSM8X16_WCD_A_CDC_RX3_VOL_CTL_B2_CTL, input);
+
+	return count;
+}
+
+static struct kobj_attribute speaker_gain_attribute =
+	__ATTR(speaker_gain, 0664,
+		speaker_gain_show,
+		speaker_gain_store);
+
+static struct attribute *sound_control_attrs[] = {
+		&headphone_gain_attribute.attr,
+		&mic_gain_attribute.attr,
+		&speaker_gain_attribute.attr,
+		NULL,
+};
+
+static struct attribute_group sound_control_attr_group = {
+		.attrs = sound_control_attrs,
+};
+
+static struct kobject *sound_control_kobj;
+#endif
+
 
 static int msm8x16_wcd_codec_probe(struct snd_soc_codec *codec)
 {
