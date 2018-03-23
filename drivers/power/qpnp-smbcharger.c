@@ -448,17 +448,20 @@ module_param_named(
 	int, S_IRUSR | S_IWUSR
 );
 
-#ifdef CONFIG_FORCE_FAST_CHARGE
-static int smbchg_default_hvdcp_icl_ma = 1600; //Maximum charging current at HVDCP (9VDC HW Support Power Supply)
-#else
-static int smbchg_default_hvdcp_icl_ma = 1200;
-#endif
+
+
+static int smbchg_default_hvdcp_icl_ma = 2000;
+
+
 module_param_named(
 	default_hvdcp_icl_ma, smbchg_default_hvdcp_icl_ma,
 	int, S_IRUSR | S_IWUSR
 );
 
-static int smbchg_default_hvdcp3_icl_ma = 2500; //Special curent for High Power Buck Mode at 6VDC Supply
+
+
+static int smbchg_default_hvdcp3_icl_ma = 3000;
+
 module_param_named(
 	default_hvdcp3_icl_ma, smbchg_default_hvdcp3_icl_ma,
 	int, S_IRUSR | S_IWUSR
@@ -4734,10 +4737,7 @@ static int smbchg_change_usb_supply_type(struct smbchg_chip *chip,
 	 * Note: for SDP supporting current based on USB notifications.
 	 */
 
-	if (version_flag) {
-		smbchg_default_hvdcp3_icl_ma = 1500;
-		smbchg_default_dcp_icl_ma = 1500;
-	}
+
 
 	if (chip->typec_psy && (type != POWER_SUPPLY_TYPE_USB))
 		current_limit_ma = chip->typec_current_ma;
@@ -7900,8 +7900,9 @@ err:
 	return rc;
 }
 
-#define DEFAULT_VLED_MAX_UV		3500000
+
 #define DEFAULT_FCC_MA			2500 //Set default maximum current, can be set up to 3000mA
+
 static int smb_parse_dt(struct smbchg_chip *chip)
 {
 	int rc = 0, ocp_thresh = -EINVAL;
@@ -7923,9 +7924,8 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 			"fastchg-current-ma", rc, 1);
 
 	if (chip->cfg_fastchg_current_ma == -EINVAL) {
-		pr_err("version_flag\n");
-		if (version_flag)
-			chip->cfg_fastchg_current_ma = DEFAULT_FCC_MA;
+
+		chip->cfg_fastchg_current_ma = DEFAULT_FCC_MA;
 
 		pr_err("chip->cfg_fastchg_current_ma = %d\n", chip->cfg_fastchg_current_ma);
 	}
@@ -8842,7 +8842,7 @@ static int smbchg_probe(struct spmi_device *spmi)
 	mutex_init(&chip->usb_status_lock);
 	device_init_wakeup(chip->dev, true);
 
-	get_version_change_current(chip);
+
 
 	rc = smbchg_parse_peripherals(chip);
 	if (rc) {
