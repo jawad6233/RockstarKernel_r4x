@@ -23,6 +23,7 @@
 
 	chosen {
 		bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1 sched_downmigrate=45 sched_upmigrate=72 sched_restrict_cluster_spill=0 sched_boost=1 kpti=1";
+
 	};
 
 	firmware: firmware {
@@ -493,6 +494,7 @@
 		qcom,bcl-framework-interface;
 		qcom,bcl-freq-control-list = <&CPU0 &CPU1 &CPU2 &CPU3>;
 		qcom,ibat-monitor {
+
 
 			qcom,low-threshold-uamp = <750000>;
 			qcom,high-threshold-uamp = <1200000>;
@@ -1206,6 +1208,7 @@
 		qcom,boost-sysclk-with-streaming;
 		qcom,axi-prefetch-enable;
 		qcom,enable-sdp-typec-current-limit;
+		qcom,hsusb-otg-power-budget = <2000>;
 		qcom,hsusb-otg-delay-lpm;
 
 		qcom,msm-bus,name = "usb2";
@@ -1584,7 +1587,7 @@
 		qcom,use-sw-ahash-algo;
 		qcom,use-sw-hmac-algo;
 		qcom,use-sw-aead-algo;
-		qcom,ce-opp-freq = <100000000>;
+		qcom,ce-opp-freq = <160000000>;
 	};
 
 	qcom_cedev: qcedev@720000 {
@@ -1609,7 +1612,7 @@
 			 <&clock_gcc clk_gcc_crypto_axi_clk>;
 		clock-names = "core_clk_src", "core_clk",
 				"iface_clk", "bus_clk";
-		qcom,ce-opp-freq = <100000000>;
+		qcom,ce-opp-freq = <160000000>;
 	};
 
 	qcom_seecom: qseecom@84A00000 {
@@ -1637,7 +1640,7 @@
 			 <&clock_gcc clk_gcc_crypto_axi_clk>;
 		clock-names = "core_clk_src", "core_clk",
 				"iface_clk", "bus_clk";
-		qcom,ce-opp-freq = <100000000>;
+		qcom,ce-opp-freq = <160000000>;
 	};
 
 	qcom,ipc_router {
@@ -2023,6 +2026,23 @@
 		qcom,firmware-name = "venus";
 		memory-region = <&venus_mem>;
 	};
+
+
+	mcd {
+		compatible = "qcom,mcd";
+		qcom,ce-hw-instance = <0>;
+		qcom,ce-device = <0>;
+		interrupts = <0 248 0>;
+		interrupt-names = "mcd_irq";
+		clocks = <&clock_gcc clk_crypto_clk_src>,
+			 <&clock_gcc clk_gcc_crypto_clk>,
+			 <&clock_gcc clk_gcc_crypto_ahb_clk>,
+			 <&clock_gcc clk_gcc_crypto_axi_clk>;
+		clock-names = "core_clk_src", "core_clk",
+				"iface_clk", "bus_clk";
+		qcom,ce-opp-freq = <160000000>;
+	};
+
 
 	qcom,msm-ssc-sensors {
 		compatible = "qcom,msm-ssc-sensors";
