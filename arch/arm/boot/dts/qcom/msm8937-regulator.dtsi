@@ -299,6 +299,9 @@
 			compatible = "qcom,spm-regulator";
 			reg = <0x2000 0x100>;
 			qcom,mode = "pwm";
+
+		        qcom,init-quiet-mode = <2>; //Regulator EMI noise reduction
+
 			regulator-name = "pm8937_s5";
 			regulator-min-microvolt = <1050000>;
 			regulator-max-microvolt = <1350000>;
@@ -400,6 +403,7 @@
 					<70 54 10 0>;
 		qcom,cpr-fuse-quot-offset-scale = <5 5 5>;
 		qcom,cpr-init-voltage-step = <10000>;
+
 		qcom,cpr-corner-map = <1 1 2 2 2 3 3 3 3 3>;
 
 		qcom,cpr-corner-frequency-map =

@@ -429,7 +429,7 @@
 		qcom,limit-temp = <60>;
 		qcom,temp-hysteresis = <10>;
 		qcom,freq-step = <2>;
-		qcom,core-limit-temp = <80>;
+		qcom,core-limit-temp = <70>;
 		qcom,core-temp-hysteresis = <10>;
 		qcom,hotplug-temp = <105>;
 		qcom,hotplug-temp-hysteresis = <15>;
@@ -437,14 +437,37 @@
 		qcom,freq-mitigation-temp-hysteresis = <15>;
 		qcom,freq-mitigation-value = <400000>;
 		qcom,online-hotplug-core;
+		qcom,cpu-sensors = "tsens_tz_sensor9", "tsens_tz_sensor8",
+				   "tsens_tz_sensor7", "tsens_tz_sensor6",
+				   "tsens_tz_sensor5", "tsens_tz_sensor4";
 		qcom,synchronous-cluster-id = <0 1>;
 		qcom,synchronous-cluster-map = <1 4 &CPU0 &CPU1 &CPU2 &CPU3>,
 						<0 4 &CPU4 &CPU5 &CPU6 &CPU7>;
-		qcom,disable-cx-phase-ctrl;
-		qcom,disable-gfx-phase-ctrl;
-		qcom,disable-vdd-mx;
+
+		qcom,rpm-phase-resource-type = "misc";
+		qcom,rpm-phase-resource-id = <0>;
+		qcom,cx-phase-resource-key = "tmpc";
+		qcom,cx-phase-hot-crit-temp = <75>;
+		qcom,cx-phase-hot-crit-temp-hyst = <15>;
+		qcom,pmic-sw-mode-temp = <65>;
+		qcom,pmic-sw-mode-temp-hysteresis = <60>;
+		qcom,pmic-sw-mode-regs = "vdd-dig";
+		qcom,gfx-phase-warm-temp = <60>;
+		qcom,gfx-phase-warm-temp-hyst = <10>;
+		qcom,gfx-phase-hot-crit-temp = <75>;
+		qcom,gfx-phase-hot-crit-temp-hyst = <60>;
+		qcom,gfx-sensor-id = <10>;
+		qcom,gfx-phase-resource-key = "tmpg";
+		//qcom,disable-gfx-phase-ctrl;
+		//qcom,disable-cx-phase-ctrl;
+		//qcom,disable-vdd-mx;
+
 		qcom,disable-psm;
 		qcom,disable-ocr;
+		qcom,mx-restriction-temp = <5>;
+		qcom,mx-restriction-temp-hysteresis = <10>;
+		qcom,mx-retention-min = <RPM_SMD_REGULATOR_LEVEL_RETENTION>;
+		vdd-mx-supply = <&pm8937_l3_level_ao>;
 		qcom,vdd-restriction-temp = <5>;
 		qcom,vdd-restriction-temp-hysteresis = <10>;
 		vdd-dig-supply = <&pm8937_s2_floor_level>;
@@ -468,16 +491,15 @@
 		compatible = "qcom,bcl";
 		qcom,bcl-enable;
 		qcom,bcl-framework-interface;
-		qcom,bcl-freq-control-list = <&CPU0 &CPU1 &CPU2 &CPU3
-						&CPU4 &CPU5 &CPU6 &CPU7>;
-		qcom,bcl-hotplug-list = <&CPU2 &CPU3>;
-		qcom,bcl-soc-hotplug-list = <&CPU0 &CPU1 &CPU2 &CPU3>;
+		qcom,bcl-freq-control-list = <&CPU0 &CPU1 &CPU2 &CPU3>;
 		qcom,ibat-monitor {
-			qcom,low-threshold-uamp = <3400000>;
-			qcom,high-threshold-uamp = <4200000>;
-			qcom,mitigation-freq-khz = <998400>;
-			qcom,vph-high-threshold-uv = <3500000>;
-			qcom,vph-low-threshold-uv = <3200000>;
+
+			qcom,low-threshold-uamp = <750000>;
+			qcom,high-threshold-uamp = <1200000>;
+			qcom,mitigation-freq-khz = <960000>;
+			qcom,vph-high-threshold-uv = <3700000>;
+			qcom,vph-low-threshold-uv = <3500000>;
+
 			qcom,soc-low-threshold = <10>;
 			qcom,thermal-handle = <&msm_thermal_freq>;
 		};
@@ -2093,6 +2115,10 @@
 &msm_gpu {
 
 	qcom,gpu-speed-bin = <0x6018 0x80000000 31>;
+
+	//Special features:
+	qcom,tsens-name = "tsens_tz_sensor10"; //enable sensor name for GPU temperature monitoring 
+	qcom,l2pc-cpu-mask = <0x000000F0>; // Avoid L2PC on big cluster CPUs (CPU 4,5,6,7)
 
 	qcom,gpu-pwrlevel-bins {
 		#address-cells = <1>;
