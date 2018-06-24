@@ -3,7 +3,7 @@
  * MSM architecture cpufreq driver
  *
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2007-2015, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2007-2017, The Linux Foundation. All rights reserved.
  * Author: Mike A. Chan <mikechan@google.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -24,6 +24,7 @@
 #include <linux/cpumask.h>
 #include <linux/suspend.h>
 #include <linux/clk.h>
+#include <linux/clk/msm-clk-provider.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -48,7 +49,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 {
 	int ret = 0;
 	struct cpufreq_freqs freqs;
-	unsigned long rate;
+	unsigned long rate = 0L;
 
 	freqs.old = policy->cur;
 	freqs.new = new_freq;
@@ -72,7 +73,7 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 				unsigned int relation)
 {
 	int ret = 0;
-	int index;
+	int index = 0;
 	struct cpufreq_frequency_table *table;
 
 	mutex_lock(&per_cpu(suspend_data, policy->cpu).suspend_mutex);
@@ -126,12 +127,12 @@ static unsigned int msm_cpufreq_get_freq(unsigned int cpu)
 
 static int msm_cpufreq_init(struct cpufreq_policy *policy)
 {
-	int cur_freq;
-	int index;
+	int cur_freq = 0;
+	int index = 0;
 	int ret = 0;
 	struct cpufreq_frequency_table *table =
 			per_cpu(freq_table, policy->cpu);
-	int cpu;
+	int cpu = 0;
 
 	/*
 	 * In some SoC, some cores are clocked by same source, and their
@@ -143,8 +144,11 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 		if (cpu_clk[cpu] == cpu_clk[policy->cpu])
 			cpumask_set_cpu(cpu, policy->cpus);
 
-	if (cpufreq_frequency_table_cpuinfo(policy, table))
+	ret = cpufreq_table_validate_and_show(policy, table);
+	if (ret) {
 		pr_err("cpufreq: failed to get policy min/max\n");
+	return ret;
+	}
 
 	cur_freq = clk_get_rate(cpu_clk[policy->cpu])/1000;
 
@@ -167,7 +171,6 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 	pr_debug("cpufreq: cpu%d init at %d switching to %d\n",
 			policy->cpu, cur_freq, table[index].frequency);
 	policy->cur = table[index].frequency;
-	policy->freq_table = table;
 
 	return 0;
 }
@@ -176,7 +179,7 @@ static int msm_cpufreq_cpu_callback(struct notifier_block *nfb,
 		unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long)hcpu;
-	int rc;
+	int rc = 0;
 
 	/* Fail hotplug until this driver can get CPU clocks */
 	if (!hotplug_ready)
@@ -235,7 +238,7 @@ static struct notifier_block __refdata msm_cpufreq_cpu_notifier = {
 
 static int msm_cpufreq_suspend(void)
 {
-	int cpu;
+	int cpu = 0;
 
 	for_each_possible_cpu(cpu) {
 		mutex_lock(&per_cpu(suspend_data, cpu).suspend_mutex);
@@ -248,7 +251,7 @@ static int msm_cpufreq_suspend(void)
 
 static int msm_cpufreq_resume(void)
 {
-	int cpu, ret;
+	int cpu = 0, ret = 0;
 	struct cpufreq_policy policy;
 
 	for_each_possible_cpu(cpu) {
@@ -318,7 +321,7 @@ static struct cpufreq_driver msm_cpufreq_driver = {
 static struct cpufreq_frequency_table *cpufreq_parse_dt(struct device *dev,
 						char *tbl_name, int cpu)
 {
-	int ret, nf, i;
+	int ret = 0, nf = 0, i = 0, j = 0;
 	u32 *data;
 	struct cpufreq_frequency_table *ftbl;
 
@@ -351,29 +354,19 @@ static struct cpufreq_frequency_table *cpufreq_parse_dt(struct device *dev,
 		f /= 1000;
 
 		/*
-		 * Check if this is the last feasible frequency in the table.
-		 *
-		 * The table listing frequencies higher than what the HW can
-		 * support is not an error since the table might be shared
-		 * across CPUs in different speed bins. It's also not
-		 * sufficient to check if the rounded rate is lower than the
-		 * requested rate as it doesn't cover the following example:
-		 *
-		 * Table lists: 2.2 GHz and 2.5 GHz.
-		 * Rounded rate returns: 2.2 GHz and 2.3 GHz.
-		 *
-		 * In this case, we can CPUfreq to use 2.2 GHz and 2.3 GHz
-		 * instead of rejecting the 2.5 GHz table entry.
+		 * Don't repeat frequencies if they round up to the same clock
+		 * frequency.
 		 */
-		if (i > 0 && f <= ftbl[i-1].frequency)
-			break;
+		if (j > 0 && f <= ftbl[j - 1].frequency)
+			continue;
 
-		ftbl[i].driver_data = i;
-		ftbl[i].frequency = f;
+		ftbl[j].driver_data = j;
+		ftbl[j].frequency = f;
+		j++;
 	}
 
-	ftbl[i].driver_data = i;
-	ftbl[i].frequency = CPUFREQ_TABLE_END;
+	ftbl[j].driver_data = j;
+	ftbl[j].frequency = CPUFREQ_TABLE_END;
 
 	devm_kfree(dev, data);
 
@@ -386,7 +379,7 @@ static int __init msm_cpufreq_probe(struct platform_device *pdev)
 	char clk_name[] = "cpu??_clk";
 	char tbl_name[] = "qcom,cpufreq-table-??";
 	struct clk *c;
-	int cpu;
+	int cpu = 0;
 	struct cpufreq_frequency_table *ftbl;
 
 	l2_clk = devm_clk_get(dev, "l2_clk");
@@ -396,8 +389,13 @@ static int __init msm_cpufreq_probe(struct platform_device *pdev)
 	for_each_possible_cpu(cpu) {
 		snprintf(clk_name, sizeof(clk_name), "cpu%d_clk", cpu);
 		c = devm_clk_get(dev, clk_name);
-		if (IS_ERR(c))
+		if (cpu == 0 && IS_ERR(c))
 			return PTR_ERR(c);
+
+		else if (IS_ERR(c))
+			c = cpu_clk[cpu-1];
+		c->flags |= CLKFLAG_NO_RATE_CACHE;
+
 		cpu_clk[cpu] = c;
 	}
 	hotplug_ready = true;
@@ -469,7 +467,7 @@ static struct platform_driver msm_cpufreq_plat_driver = {
 
 static int __init msm_cpufreq_register(void)
 {
-	int cpu, rc;
+	int cpu = 0, rc = 0;
 
 	for_each_possible_cpu(cpu) {
 		mutex_init(&(per_cpu(suspend_data, cpu).suspend_mutex));
