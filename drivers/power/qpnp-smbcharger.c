@@ -7925,8 +7925,6 @@ static int smb_parse_dt(struct smbchg_chip *chip)
 	if (chip->cfg_fastchg_current_ma == -EINVAL) {
 		pr_err("version_flag\n");
 		if (version_flag)
-			chip->cfg_fastchg_current_ma = INDIA_DEFAULT_FCC_MA;
-		else
 			chip->cfg_fastchg_current_ma = DEFAULT_FCC_MA;
 
 		pr_err("chip->cfg_fastchg_current_ma = %d\n", chip->cfg_fastchg_current_ma);
