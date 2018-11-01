@@ -767,9 +767,7 @@ static struct clk_freq_tbl ftbl_gcc_oxili_gfx3d_clk_8937_475MHz[] = {
 	F_SLEW( 450000000, 900000000,	  gpll3,	1,	0,	0),
 	F_SLEW( 500000000, 1000000000,	  gpll3,	1,	0,	0),
 	F_SLEW( 550000000, 1100000000,	  gpll3,	1,	0,	0),
-        F_SLEW( 575000000, 1150000000,    gpll3,        1,      0,      0),
 	F_SLEW( 600000000, 1200000000,	  gpll3,	1,	0,	0),
-        F_SLEW( 650000000, 1300000000,    gpll3,        1,      0,      0),
 	F_END
 };
 
@@ -4215,7 +4213,7 @@ static void override_for_8917(int speed_bin)
 
 static void override_for_8937(int speed_bin)
 {
-	gpll3_clk_src.c.rate = 960000000;
+	gpll3_clk_src.c.rate = 930000000;
 
 	OVERRIDE_FMAX1(cci, LOWER, 37500000);
 	OVERRIDE_FMAX3(csi0,
@@ -4240,7 +4238,7 @@ static void override_for_8937(int speed_bin)
 		OVERRIDE_FMAX6(gfx3d,
 			LOWER, 160000000, LOW, 240000000,
 			NOMINAL, 320000000, NOM_PLUS, 400000000,
-			HIGH, 500000000, SUPER_TUR, 650000000);
+			HIGH, 500000000, SUPER_TUR, 600000000);
 		OVERRIDE_FTABLE(gfx3d, ftbl_gcc_oxili_gfx3d_clk, 8937_475MHz);
 	} else {
 		OVERRIDE_FMAX5(gfx3d,
@@ -4423,13 +4421,13 @@ static int msm_gcc_probe(struct platform_device *pdev)
 				gfx3d_clk_src.freq_tbl =
 					ftbl_gcc_oxili_gfx3d_clk_8940_500MHz;
 				gfx3d_clk_src.c.fmax[VDD_DIG_SUPER_TUR] =
-								650000000;
+								600000000;
 			} else {
 				gfx3d_clk_src.freq_tbl =
 					ftbl_gcc_oxili_gfx3d_clk_8937_475MHz;
 				gfx3d_clk_src.c.fmax[VDD_DIG_SUPER_TUR] =
 
-								650000000;
+								600000000;
 
 			}
 		}
