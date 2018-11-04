@@ -79,18 +79,6 @@ config IOSCHED_ZEN
 	  FCFS, dispatches are back-inserted, deadlines ensure fairness.
 	  Should work best with devices where there is no travel delay.
 
-config IOSCHED_ROW
-	tristate "ROW I/O scheduler"
-	default y
-	---help---
-	  The ROW I/O scheduler gives priority to READ requests over the
-	  WRITE requests when dispatching, without starving WRITE requests.
-	  Requests are kept in priority queues. Dispatching is done in a RR
-	  manner when the dispatch quantum for each queue is calculated
-	  according to queue priority.
-	  Most suitable for mobile devices.
-
-
 choice
 	prompt "Default I/O scheduler"
 	default DEFAULT_CFQ
@@ -117,6 +105,7 @@ choice
 	config DEFAULT_FIOPS
 		bool "FIOPS" if IOSCHED_FIOPS=y
 
+
 	config DEFAULT_ROW
 		bool "ROW" if IOSCHED_ROW=y
 		help
@@ -128,6 +117,7 @@ choice
 		  Most suitable for mobile devices.
 
 
+
 endchoice
 
 config DEFAULT_IOSCHED
@@ -135,13 +125,6 @@ config DEFAULT_IOSCHED
 	default "deadline" if DEFAULT_DEADLINE
 	default "cfq" if DEFAULT_CFQ
 	default "noop" if DEFAULT_NOOP
-<<<<<<< HEAD
-=======
-	default "zen" if DEFAULT_ZEN
-	default "maple" if DEFAULT_MAPLE
-	default "fiops" if DEFAULT_FIOPS
-	default "row" if DEFAULT_ROW
->>>>>>> 0b199de1030e... block: Bring back row scheduler from 3.10.y
 
 endmenu
 
