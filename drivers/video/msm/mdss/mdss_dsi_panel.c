@@ -33,7 +33,6 @@
 #ifdef CONFIG_POWERSUSPEND
 #include <linux/powersuspend.h>
 #endif
-#include "mdss_livedisplay.h"
 
 
 #define DT_CMD_HDR 6
