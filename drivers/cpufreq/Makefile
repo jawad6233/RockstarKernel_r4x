@@ -1,4 +1,4 @@
-,# CPUfreq core
+# CPUfreq core
 obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o freq_table.o
 
 # CPUfreq stats
