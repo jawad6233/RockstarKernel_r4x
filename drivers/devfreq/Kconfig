@@ -271,6 +271,5 @@ config DEVFREQ_MSM_CPUBW_BOOST_FREQ
 
 endif
 
-source "drivers/devfreq/event/Kconfig"
 
 endif # PM_DEVFREQ
