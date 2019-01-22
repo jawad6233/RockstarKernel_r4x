@@ -314,8 +314,7 @@ ifeq ($(MAKECMDGOALS),modules)
   KBUILD_BUILTIN := $(if $(CONFIG_MODVERSIONS),1)
 endif
 
-KBUILD_CFLAGS += $(call cc-disable-warning, 
-implicit-funtion-declaration)
+KBUILD_CFLAGS += $(call cc-disable-warning, implicit-funtion-declaration)
 
 # If we have "make <whatever> modules", compile modules
 # in addition to whatever we do anyway.
