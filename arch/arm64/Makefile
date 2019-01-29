@@ -10,7 +10,7 @@
 #
 # Copyright (C) 1995-2001 by Russell King
 
-LDFLAGS_vmlinux	:=-p --no-undefined -X
+LDFLAGS_vmlinux	:=--no-undefined -X
 CPPFLAGS_vmlinux.lds = -DTEXT_OFFSET=$(TEXT_OFFSET)
 OBJCOPYFLAGS	:=-O binary -R .note -R .note.gnu.build-id -R .comment -S
 GZFLAGS		:=-9
@@ -30,6 +30,25 @@ KBUILD_CPPFLAGS	+= -mlittle-endian
 AS		+= -EL
 LD		+= -EL
 endif
+
+# Cortex-A53 optimizations
+arch-$(CONFIG_ARCH_MSM8916)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_MSM8916)	:= -mtune=cortex-a53
+arch-$(CONFIG_ARCH_MSM8917)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_MSM8917)	:= -mtune=cortex-a53
+arch-$(CONFIG_ARCH_MSM8920)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_MSM8920)	:= -mtune=cortex-a53
+arch-$(CONFIG_ARCH_MSM8937)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_MSM8937)	:= -mtune=cortex-a53
+arch-$(CONFIG_ARCH_MSM8940)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_MSM8940)	:= -mtune=cortex-a53
+arch-$(CONFIG_ARCH_MSM8953)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_MSM8953)	:= -mtune=cortex-a53
+arch-$(CONFIG_ARCH_SDM450)	:= $(call cc-option,-mcpu=cortex-a53+crc+crypto,-march=armv8-a+crc+crypto)
+tune-$(CONFIG_ARCH_SDM450)	:= -mtune=cortex-a53
+
+KBUILD_CFLAGS	+= $(arch-y) $(tune-y)
+KBUILD_AFLAGS	+= $(arch-y) $(tune-y)
 
 CHECKFLAGS	+= -D__aarch64__
 
@@ -65,6 +84,7 @@ core-$(CONFIG_NET) += arch/arm64/net/
 core-$(CONFIG_KVM) += arch/arm64/kvm/
 core-$(CONFIG_XEN) += arch/arm64/xen/
 core-$(CONFIG_CRYPTO) += arch/arm64/crypto/
+core-$(CONFIG_CUSTOM_HOTPLUG) += arch/arm64/hotplug/
 libs-y		:= arch/arm64/lib/ $(libs-y)
 libs-$(CONFIG_EFI_STUB) += drivers/firmware/efi/libstub/
 

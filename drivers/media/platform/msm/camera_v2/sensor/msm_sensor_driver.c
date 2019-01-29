@@ -694,6 +694,7 @@ static const char *module_info[] = {
 	"Unknow",
 };
 
+
 static uint16_t fusion_read_id_s5k3l8(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	uint16_t value1, value3, value5;
@@ -793,6 +794,7 @@ static uint16_t fusion_read_id_ov13855(struct msm_sensor_ctrl_t *s_ctrl)
 
 	return 0;
 }
+
 
 /* static function definition */
 int32_t msm_sensor_driver_probe(void *setting,
@@ -1092,7 +1094,9 @@ CSID_TG:
 		printk("read fusion id fail\n");
 	}
 
+
 	pr_err("%s probe succeeded", slave_info->sensor_name);
+
 
 	/*
 	 * Update the subdevice id of flash-src based on availability in kernel.

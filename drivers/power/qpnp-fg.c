@@ -331,7 +331,7 @@ module_param_named(
 	battery_type, fg_batt_type, charp, S_IRUSR | S_IWUSR
 );
 
-static int fg_sram_update_period_ms = 30000;
+static int fg_sram_update_period_ms = 1000;
 module_param_named(
 	sram_update_period_ms, fg_sram_update_period_ms, int, S_IRUSR | S_IWUSR
 );
@@ -3271,13 +3271,13 @@ static int estimate_battery_age(struct fg_chip *chip, int *actual_capacity)
 
 	/* calculate soc_cutoff_new */
 	val = (1000000LL + temp_rs_to_rslow) * battery_esr;
-	do_div(val, 1000000);
+	val = do_div(val, 1000000);
 	ocv_cutoff_new = div64_s64(chip->evaluation_current * val, 1000)
 		+ chip->cutoff_voltage;
 
 	/* calculate soc_cutoff_aged */
 	val = (1000000LL + temp_rs_to_rslow) * esr_actual;
-	do_div(val, 1000000);
+	val = do_div(val, 1000000);
 	ocv_cutoff_aged = div64_s64(chip->evaluation_current * val, 1000)
 		+ chip->cutoff_voltage;
 
@@ -3777,11 +3777,11 @@ static void fg_cap_learning_post_process(struct fg_chip *chip)
 
 	max_inc_val = (int64_t)chip->learning_data.learned_cc_uah
 			* (1000 + chip->learning_data.max_increment);
-	do_div(max_inc_val, 1000);
+	max_inc_val = do_div(max_inc_val, 1000);
 
 	min_dec_val = (int64_t)chip->learning_data.learned_cc_uah
 			* (1000 - chip->learning_data.max_decrement);
-	do_div(min_dec_val, 1000);
+	min_dec_val = do_div(min_dec_val, 1000);
 
 	old_cap = chip->learning_data.learned_cc_uah;
 	if (chip->learning_data.cc_uah > max_inc_val)
@@ -3795,7 +3795,7 @@ static void fg_cap_learning_post_process(struct fg_chip *chip)
 	if (chip->learning_data.max_cap_limit) {
 		max_inc_val = (int64_t)chip->nom_cap_uah * (1000 +
 				chip->learning_data.max_cap_limit);
-		do_div(max_inc_val, 1000);
+		max_inc_val = do_div(max_inc_val, 1000);
 		if (chip->learning_data.cc_uah > max_inc_val) {
 			if (fg_debug_mask & FG_AGING)
 				pr_info("learning capacity %lld goes above max limit %lld\n",
@@ -3808,7 +3808,7 @@ static void fg_cap_learning_post_process(struct fg_chip *chip)
 	if (chip->learning_data.min_cap_limit) {
 		min_dec_val = (int64_t)chip->nom_cap_uah * (1000 -
 				chip->learning_data.min_cap_limit);
-		do_div(min_dec_val, 1000);
+		min_dec_val = do_div(min_dec_val, 1000);
 		if (chip->learning_data.cc_uah < min_dec_val) {
 			if (fg_debug_mask & FG_AGING)
 				pr_info("learning capacity %lld goes below min limit %lld\n",

@@ -596,12 +596,11 @@ static void cpufreq_powerstats_free(void)
 }
 
 static int __cpufreq_stats_create_table(struct cpufreq_policy *policy,
-		struct cpufreq_frequency_table *table, int count)
+	int cpu, struct cpufreq_frequency_table *table, int count)
 {
 	unsigned int i, ret = 0;
 	struct cpufreq_stats *stat;
 	unsigned int alloc_size;
-	unsigned int cpu = policy->cpu;
 	struct cpufreq_frequency_table *pos;
 
 	if (per_cpu(cpufreq_stats_table, cpu))
@@ -611,8 +610,6 @@ static int __cpufreq_stats_create_table(struct cpufreq_policy *policy,
 		return -ENOMEM;
 
 	ret = sysfs_create_group(&policy->kobj, &stats_attr_group);
-	if (ret)
-		goto error_out;
 
 	stat->cpu = cpu;
 	per_cpu(cpufreq_stats_table, cpu) = stat;
@@ -645,7 +642,6 @@ static int __cpufreq_stats_create_table(struct cpufreq_policy *policy,
 	return 0;
 error_alloc:
 	sysfs_remove_group(&policy->kobj, &stats_attr_group);
-error_out:
 	kfree(stat);
 	per_cpu(cpufreq_stats_table, cpu) = NULL;
 	return ret;
@@ -653,11 +649,17 @@ error_out:
 
 static void cpufreq_stats_update_policy_cpu(struct cpufreq_policy *policy)
 {
-	struct cpufreq_stats *stat = per_cpu(cpufreq_stats_table,
-			policy->last_cpu);
+	struct cpufreq_stats *stat;
 
 	pr_debug("Updating stats_table for new_cpu %u from last_cpu %u\n",
 			policy->cpu, policy->last_cpu);
+	stat = per_cpu(cpufreq_stats_table, policy->cpu);
+	if (stat) {
+		kfree(stat->time_in_state);
+		kfree(stat);
+	}
+
+	stat = per_cpu(cpufreq_stats_table, policy->last_cpu);
 	per_cpu(cpufreq_stats_table, policy->cpu) = per_cpu(cpufreq_stats_table,
 			policy->last_cpu);
 	per_cpu(cpufreq_stats_table, policy->last_cpu) = NULL;
@@ -824,7 +826,7 @@ static void cpufreq_stats_create_table(unsigned int cpu)
 		if (!per_cpu(cpufreq_power_stats, cpu))
 			cpufreq_powerstats_create(cpu, table, count);
 
-		__cpufreq_stats_create_table(policy, table, count);
+		__cpufreq_stats_create_table(policy, cpu, table, count);
 	}
 	cpufreq_cpu_put(policy);
 }
@@ -882,7 +884,7 @@ static int cpufreq_stat_notifier_policy(struct notifier_block *nb,
 	}
 
 	if (val == CPUFREQ_CREATE_POLICY)
-		ret = __cpufreq_stats_create_table(policy, table, count);
+		ret = __cpufreq_stats_create_table(policy, cpu, table, count);
 
 	return ret;
 }

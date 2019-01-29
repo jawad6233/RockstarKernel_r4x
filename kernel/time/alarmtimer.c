@@ -295,12 +295,10 @@ static int alarmtimer_suspend(struct device *dev)
 	now = rtc_tm_to_ktime(tm);
 	now = ktime_add(now, min);
 	if (poweron_alarm) {
-		struct rtc_time tm_val;
-		unsigned long secs;
+		uint64_t msec = 0;
 
-		tm_val = rtc_ktime_to_tm(min);
-		rtc_tm_to_time(&tm_val, &secs);
-		lpm_suspend_wake_time(secs);
+		msec = ktime_to_ms(min);
+		lpm_suspend_wake_time(msec);
 	} else {
 		/* Set alarm, if in the past reject suspend briefly to handle */
 		ret = rtc_timer_start(rtc, &rtctimer, now, ktime_set(0, 0));
@@ -892,7 +890,8 @@ static int alarm_timer_nsleep(const clockid_t which_clock, int flags,
 	/* Convert (if necessary) to absolute time */
 	if (flags != TIMER_ABSTIME) {
 		ktime_t now = alarm_bases[type].gettime();
-		exp = ktime_add(now, exp);
+
+		exp = ktime_add_safe(now, exp);
 	}
 
 	if (alarmtimer_do_nsleep(&alarm, exp))
