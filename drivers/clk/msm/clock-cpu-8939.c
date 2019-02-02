@@ -330,7 +330,7 @@ static void get_speed_bin(struct platform_device *pdev, int *bin,
 
 	
 //*bin = (pte_efuse >> 2) & 0x7;
-	*bin = 1;
+	*bin = 2;
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "efuse1");
 	if (!res) {
 		dev_info(&pdev->dev,
