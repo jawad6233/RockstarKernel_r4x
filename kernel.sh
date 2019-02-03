@@ -194,28 +194,28 @@ then
       transfer "${FINAL_ZIP}";
    
  
-if [ -n "$USE_CLANG" ]
-then
-  message=”RockstarKernel -Clang"
-else
- message="Rockstar Kernel"
-fi
-compatible="AOSP PIE/OREO"
+message="CI build of Rockstar Kernel completed with the latest commit."
 
 time="Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
- 
-# curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="$(git log --pretty=format:'%h : %s' -5)" -d chat_id=$CHAT_ID
-curl -F chat_id=$CHAT_ID -F document=@"${ZIP_DIR}/$ZIPNAME" -F caption="$message $MAKE_TYPE $compatible" https://api.telegram.org/bot$BOT_API_KEY/sendDocument
- 
+
+#curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="$(git log --pretty=format:'%h : %s' -5)" -d chat_id=$CHAT_ID
+
+curl -F chat_id="-1001344943713-F" document=@"${ZIP_DIR}/$ZIPNAME" -F caption="$message $time" https://api.telegram.org/bot$BOT_API_KEY/sendDocument
+
 curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="
-       BUILD-DETAILS
-🖋️Author      : @Dhruv007
-🛠️Make-Type   : $MAKE_TYPE $compatible
-🗒️Build-Type  : 65Hz
-⌚Build-Time  : $time
-🔗Toolchain   : $(${CROSS_COMPILE}gcc --version | head -1)
-🐉Clang       : $CLANG_VERSION
-🗒️Link        : $url  
+
+♔♔♔♔♔♔♔BUILD-DETAILS♔♔♔♔♔♔♔
+
+🖋️ Author     : DhruvGera
+
+🛠️ Make-Type  : $MAKE_TYPE
+
+🗒️ Buld-Type  : TEST
+
+⌚ Build-Time : $time
+
+🗒️ Zip-Name   : $ZIPNAME
+
 "  -d chat_id=$CHAT_ID
 # curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker -d sticker="CAADBQADFQADIIRIEhVlVOIt6EkuAgc"  -d chat_id=$CHAT_ID
 # curl -F document=@$url caption="Latest Build." https://api.telegram.org/bot$BOT_API_KEY/sendDocument -d chat_id=$CHAT_ID
