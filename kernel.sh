@@ -151,7 +151,7 @@ echo -e "Using ${JOBS} threads to compile"
 # ================
 if [ -n "$USE_CLANG" ]
 then
- export KCFLAGS="-mllvm -polly -mllvm -polly-run-dce -mllvm -polly-run-inliner -mllvm -polly-opt-fusion=max -mllvm -polly-ast-use-context -mllvm -polly-vectorizer=stripmine -mllvm -polly-detect-keep-going -Wasm-operand-widths -Wduplicate-decl-specifier -Wmisleading-indentation -Wstringop-overflow -Wsometimes-uninitialized"
+ export KCFLAGS="-mllvm -polly -mllvm -polly-run-dce -mllvm -polly-run-inliner -mllvm -polly-opt-fusion=max -mllvm -polly-ast-use-context -mllvm -polly-vectorizer=stripmine -mllvm -polly-detect-keep-going -Wasm-operand-widths -Werror=duplicate-decl-specifier -Werror=stringop-overflow= -Werror=misleading-indentation  -Wsometimes-uninitialized"
   ${MAKE} -j${JOBS} ARCH=$ARCH CC=$CC CLANG_TRIPLE=$CLANG_TRIPLE CROSS_COMPILE=$CROSS_COMPILE KCFLAGS="$KCFLAGS" | tee build-log.txt ;
 else
   ${MAKE} -j${JOBS} 2>&1 | tee build-log.txt ;
