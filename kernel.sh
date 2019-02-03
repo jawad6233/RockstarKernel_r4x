@@ -201,6 +201,7 @@ else
  message="Rockstar Kernel"
 fi
 compatible="AOSP PIE/OREO"
+
 time="Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
  
 # curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="$(git log --pretty=format:'%h : %s' -5)" -d chat_id=$CHAT_ID
@@ -216,8 +217,8 @@ curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="
 🐉Clang       : $CLANG_VERSION
 🗒️Link        : $url  
 "  -d chat_id=$CHAT_ID
- curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker -d sticker="CAADBQADFQADIIRIEhVlVOIt6EkuAgc"  -d chat_id=$CHAT_ID
- curl -F document=@$url caption="Latest Build." https://api.telegram.org/bot$BOT_API_KEY/sendDocument -d chat_id=$CHAT_ID
+# curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker -d sticker="CAADBQADFQADIIRIEhVlVOIt6EkuAgc"  -d chat_id=$CHAT_ID
+# curl -F document=@$url caption="Latest Build." https://api.telegram.org/bot$BOT_API_KEY/sendDocument -d chat_id=$CHAT_ID
  
  
 fi
