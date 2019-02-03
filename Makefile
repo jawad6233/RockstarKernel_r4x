@@ -694,6 +694,7 @@ KBUILD_CFLAGS   += $(call cc-disable-warning,duplicate-decl-specifier)
 KBUILD_CFLAGS   += $(call cc-disable-warning,stringop-overflow)
 KBUILD_CFLAGS   += $(call cc-disable-warning,bool-operation)
 KBUILD_CFLAGS   += $(call cc-disable-warning,memset-elt-size)
+KBUILD_CFLAGS   += $(call cc-disable-warning,parentheses)
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= $(call cc-option,-Oz,-Os) $(call cc-disable-warning,maybe-uninitialized,)
