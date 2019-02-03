@@ -691,7 +691,9 @@ KBUILD_CFLAGS   += $(call cc-option,-fno-store-merging,)
 KBUILD_CFLAGS   += $(call cc-disable-warning,misleading-indentation)
 KBUILD_CFLAGS   += $(call cc-disable-warning,array-bounds)
 KBUILD_CFLAGS   += $(call cc-disable-warning,duplicate-decl-specifier)
-KBUILD_CFLAGS   += $(call cc-disable-warning,stringop-overflow=)
+KBUILD_CFLAGS   += $(call cc-disable-warning,stringop-overflow)
+KBUILD_CFLAGS   += $(call cc-disable-warning,bool-operation)
+KBUILD_CFLAGS   += $(call cc-disable-warning,memset-elt-size)
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= $(call cc-option,-Oz,-Os) $(call cc-disable-warning,maybe-uninitialized,)
