@@ -700,7 +700,7 @@ KBUILD_CFLAGS   += $(call cc-disable-warning,switch-unreachable)
 KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-typedef-redefinition)
 KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-parentheses-equality)
 KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-non-literal-null-conversion)
-KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-enum-conversion
+KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-enum-conversion)
 
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
