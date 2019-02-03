@@ -74,7 +74,7 @@ export TOOLCHAIN="$HOME/TC/aarch64-linux-gnu-8.x";
 export DEFCONFIG="santoni_defconfig";
 export ZIP_DIR="${HOME}/${KERNELDIR}/files";
 export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb";
-export CHAT_ID="-1001344943713"
+export CHAT_ID="-1001344943713";
 export BOT_API_KEY="780524065:AAHoWvNA0Z3TrzNboNX3wUzUvHZpFLyUKb0"
 #  Clang
 if [[ "$*" == *"-clang"* ]]
