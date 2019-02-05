@@ -1698,8 +1698,7 @@ endif
 # Usage:
 # $(Q)$(MAKE) $(clean)=dir
 clean := -f $(srctree)/scripts/Makefile.clean obj
-
-endif	# skip-makefile
+	# skip-makefile
 
 PHONY += FORCE
 FORCE:
