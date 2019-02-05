@@ -2,7 +2,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
 # Linux/arm64 3.18.120 Kernel Configuration
-#
+
+CONFIG_THUNDERPLUG_CONTROL=y
 CONFIG_CC_WERROR=y
 CONFIG_NO_ERROR_MISMATCH=y
 CONFIG_ARM64=y
