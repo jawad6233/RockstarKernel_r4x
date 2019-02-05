@@ -701,7 +701,7 @@ KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-typedef-redefinition)
 KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-parentheses-equality)
 KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-non-literal-null-conversion)
 KBUILD_CFLAGS   += $(call cc-disable-warning,-Wno-enum-conversion)
-
+KBUILD_CFLAGS   += $(call cc-disable-warning,unused-command-line-argument)
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= $(call cc-option,-Oz,-Os) $(call cc-disable-warning,maybe-uninitialized,)
@@ -758,13 +758,6 @@ ifdef CONFIG_CC_STACKPROTECTOR_REGULAR
   ifeq ($(call cc-option, $(stackp-flag)),)
     $(warning Cannot use CONFIG_CC_STACKPROTECTOR_REGULAR: \
              -fstack-protector not supported by compiler)
-  endif
-else
-ifdef CONFIG_CC_STACKPROTECTOR_STRONG
-  stackp-flag := -fstack-protector-strong
-  ifeq ($(call cc-option, $(stackp-flag)),)
-    $(warning Cannot use CONFIG_CC_STACKPROTECTOR_STRONG: \
-	      -fstack-protector-strong not supported by compiler)
   endif
 else
   # Force off for distro compilers that enable stack protector by default.
